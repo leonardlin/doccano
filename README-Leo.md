@@ -18,3 +18,9 @@ docker tag doccano-leo:latest 945774840637.dkr.ecr.eu-west-1.amazonaws.com/docca
 docker push 945774840637.dkr.ecr.eu-west-1.amazonaws.com/doccano-leo:1
 
 mv .env.bak .env
+
+
+##### leo variety #####
+make changes in master and make PR to mainline
+merge changes to branch 'leo-variety'
+create docker and publish to own docker regisry
