@@ -1,4 +1,10 @@
-# run env
+# install the first time
+$ pipenv shell
+$ pip install doccano
+$ doccano init
+# doccano createuser --username admin --password pass
+
+# run it
 
 $ pipenv shell
 $ doccano webserver --port 8000 &
