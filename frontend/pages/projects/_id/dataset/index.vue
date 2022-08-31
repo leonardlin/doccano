@@ -14,6 +14,9 @@
         {{ $t('generic.delete') }}
       </v-btn>
       <v-spacer />
+      <v-btn class="mr-2" :href="'/v1/projects/'+project.id+'/examples?limit=0&offset=0'">
+        List as json
+      </v-btn>
       <v-btn
         :disabled="!item.count"
         class="text-capitalize"

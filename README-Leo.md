@@ -13,6 +13,9 @@ $ doccano task &
 $ cd frontend
 $ yarn dev
 
+yarn bug to resolve to git protocol
+$ git config --global url."https://github.com/".insteadOf git@github.com:
+$ git config --global url."https://".insteadOf git://
 
 # build own image
 mv .env .env.bak
