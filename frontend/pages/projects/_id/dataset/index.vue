@@ -4,6 +4,7 @@
       <action-menu
         @upload="$router.push('dataset/import')"
         @download="$router.push('dataset/export')"
+        @create="$router.push('dataset/create-example')"
       />
       <v-btn
         class="text-capitalize ms-2"

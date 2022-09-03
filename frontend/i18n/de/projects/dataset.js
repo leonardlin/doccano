@@ -3,6 +3,7 @@ export default {
   actions: 'Aktionen',
   importDataset: 'Importiere Datensatz',
   exportDataset: 'Exportiere Datensatz',
+  createExample: 'Dokument hinzufügen',
   text: 'Text',
   metadata: 'Metadaten',
   action: 'Aktion',

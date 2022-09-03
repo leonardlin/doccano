@@ -3,6 +3,7 @@ export default {
   actions: '操作',
   importDataset: '导入数据集',
   exportDataset: '导出数据集',
+  createExample: '新文件',
   text: '文本',
   metadata: '元数据',
   action: '操作',

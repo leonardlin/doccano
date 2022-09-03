@@ -3,6 +3,7 @@ export default {
   actions: 'Actions',
   importDataset: 'Import Dataset',
   exportDataset: 'Export Dataset',
+  createExample: 'New Document',
   text: 'Text',
   metadata: 'Metadata',
   action: 'Action',

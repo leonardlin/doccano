@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mdiUpload, mdiDownload } from '@mdi/js'
+import { mdiUpload, mdiDownload, mdiCommentPlusOutline } from '@mdi/js'
 import ActionMenu from '~/components/utils/ActionMenu.vue'
 
 export default Vue.extend({
@@ -30,7 +30,12 @@ export default Vue.extend({
           title: this.$t('dataset.exportDataset'),
           icon: mdiDownload,
           event: 'download'
-        }
+        },
+        {
+          title: this.$t('dataset.createExample'),
+          icon: mdiCommentPlusOutline,
+          event: 'create'
+        },
       ]
     }
   }
