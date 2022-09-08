@@ -25,10 +25,11 @@ export class SequenceLabelingApplicationService extends AnnotationApplicationSer
     labelId: number,
     startOffset: number,
     endOffset: number
-  ): Promise<void> {
+  ): Promise<Span | void> {
     const item = new Span(0, labelId, 0, startOffset, endOffset)
     try {
-      await this.repository.create(projectId, docId, item)
+      const result = await this.repository.create(projectId, docId, item);
+      return (result as any).data as Span;
     } catch (e: any) {
       console.log(e.response.data.detail)
     }

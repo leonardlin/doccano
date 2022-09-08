@@ -11,9 +11,9 @@ export abstract class AnnotationRepository<T extends AnnotationModel> {
     return items.map((item) => this.model.valueOf(item))
   }
 
-  public async create(projectId: string, docId: number, item: T): Promise<void> {
+  public async create(projectId: string, docId: number, item: T): Promise<unknown> {
     const url = this.baseUrl(projectId, docId)
-    await this.request.post(url, item.toObject())
+    return await this.request.post(url, item.toObject())
   }
 
   public async delete(projectId: string, docId: number, annotationId: number): Promise<void> {

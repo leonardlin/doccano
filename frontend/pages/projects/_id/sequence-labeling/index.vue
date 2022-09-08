@@ -12,6 +12,7 @@
         @click:review="confirm"
         @click:review-next="confirmNext"
       />
+      <v-progress-linear v-if="autoLabelInProgress" indeterminate></v-progress-linear>
       <toolbar-mobile :total="docs.count" class="d-flex d-sm-none" />
     </template>
     <template #content>
@@ -110,6 +111,7 @@ import ToolbarLaptop from '@/components/tasks/toolbar/ToolbarLaptop'
 import ToolbarMobile from '@/components/tasks/toolbar/ToolbarMobile'
 import EntityEditor from '@/components/tasks/sequenceLabeling/EntityEditor.vue'
 import AnnotationProgress from '@/components/tasks/sidebar/AnnotationProgress.vue'
+import { CommentAnalyzerService } from '~/services/CommentAnalyzerService'
 
 export default {
   components: {
@@ -140,7 +142,9 @@ export default {
       selectedEntityLabelIndex: null,
       selectedRelationLabelIndex: null,
       progress: {},
-      relationMode: false
+      relationMode: false,
+      autoLabelInProgress: false,
+      commentAnalyzerService: new CommentAnalyzerService()
     }
   },
 
@@ -152,10 +156,13 @@ export default {
       this.$route.query.isChecked
     )
     const doc = this.docs.items[0]
+    this.relationMode = false;
+    
+    await this.list(doc.id)
+
     if (this.enableAutoLabeling && !doc.isConfirmed) {
       await this.autoLabel(doc.id)
     }
-    await this.list(doc.id)
   },
 
   computed: {
@@ -244,7 +251,7 @@ export default {
     },
 
     async addSpan(startOffset, endOffset, labelId) {
-      await this.$services.sequenceLabeling.create(
+      const newSpan = await this.$services.sequenceLabeling.create(
         this.projectId,
         this.doc.id,
         labelId,
@@ -252,6 +259,7 @@ export default {
         endOffset
       )
       await this.list(this.doc.id)
+      return newSpan;
     },
 
     async updateSpan(annotationId, labelId) {
@@ -295,11 +303,55 @@ export default {
       await this.list(this.doc.id)
     },
 
-    async autoLabel(docId) {
+    async autoLabel(_docId) {
       try {
-        await this.$services.sequenceLabeling.autoLabel(this.projectId, docId)
+        if(Array.isArray(this.annotations) && this.annotations.length > 0) {
+          console.log('skip autoLabel, there are labels already');
+          return;
+        }
+
+        this.autoLabelInProgress = true;
+
+        const getSpanTypeId = (spanTypeString) => {
+          for(const spanType of this.spanTypes) {
+            if(spanType.text === spanTypeString) {
+              return spanType.id;
+            }
+          }
+        }
+        const getRelationTypeId = () => {
+          return this.relationTypes[0].id;
+        }
+
+        const annotations = await this.commentAnalyzerService.inference(this.doc.text);
+        console.log('autoLabel result: ', annotations);
+
+        const spanMap = new Map();
+        for(const entity of annotations.entities) {
+          const newSpan = await this.addSpan(
+            entity.start_offset,
+            entity.end_offset,
+            getSpanTypeId(entity.label)
+          );
+          entity.new_id = newSpan.id;
+
+          spanMap.set(entity.id, entity);
+        }
+        console.log('autoLabel spanMap: ', spanMap);
+
+        for(const relation of annotations.relations) {
+          await this.addRelation(
+            spanMap.get(relation.from_id).new_id,
+            spanMap.get(relation.to_id).new_id,
+            getRelationTypeId()
+          );
+        }
+
+        this.autoLabelInProgress = false;
+
       } catch (e) {
-        console.log(e.response.data.detail)
+        this.autoLabelInProgress = false;
+        console.log(e.response.data.detail);
       }
     },
 
